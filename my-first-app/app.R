@@ -26,7 +26,16 @@ server <- function(input, output) {
         df_clicked <- nearPoints(df = df(), 
                                  coordinfo = input[["plot1_click"]], 
                                  maxpoints = 1, allRows = TRUE)
-        rv[["clicked_id"]] <- c(rv[["clicked_id"]], which(df_clicked[["selected_"]]))
+        
+        selected_point <- which(df_clicked[["selected_"]])
+        if(length(selected_point) > 0) {
+            if(selected_point %in% rv[["clicked_id"]]) {
+                rv[["clicked_id"]] <- setdiff(rv[["clicked_id"]], selected_point)
+            } else {
+                rv[["clicked_id"]] <- c(rv[["clicked_id"]], selected_point)
+            }
+        }
+        
     })
     
     
@@ -38,7 +47,11 @@ server <- function(input, output) {
     
     
     output[["plot1"]] <- renderPlot({
-        ggplot(df(), aes(x = x, y = y)) +
+        plot_df <- df()
+        plot_df[["selected"]] <- FALSE
+        plot_df[rv[["clicked_id"]], "selected"] <- TRUE 
+        
+        ggplot(plot_df, aes(x = x, y = y, size = selected, color = selected)) +
             geom_point() +
             ggtitle(input[["text1"]])
     })
