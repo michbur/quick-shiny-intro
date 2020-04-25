@@ -11,7 +11,8 @@ ui <- fluidPage(
     sliderInput("slider1", "Slide sth", min = 1, max = 100, 
                 value = c(4, 5)),
     textOutput("text_value"),
-    plotOutput("plot1", click = "plot1_click")
+    plotOutput("plot1", click = "plot1_click"),
+    verbatimTextOutput("click_value")
 
     
 )
@@ -33,6 +34,10 @@ server <- function(input, output) {
     
     output[["text_value"]] <- renderText({
         paste0("Title is ", input[["text1"]])
+    })
+    
+    output[["click_value"]] <- renderPrint({
+        input[["plot1_click"]]
     })
 }
 
