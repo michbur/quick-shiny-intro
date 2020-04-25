@@ -2,12 +2,16 @@ library(shiny)
 library(ggplot2)
 
 # https://github.com/rstudio/reactlog
+# renderUI albo zamiast updateSliderInput
 
 ui <- fluidPage(
     
     
     titlePanel("AppAAAAAAAAA"),
     textInput("text1", "Enter title", value = "title"),
+    uiOutput("long_text_box"),
+    numericInput("max_slider", "Input max slider length", min = 10, max = 20, 
+                 value = 10),
     sliderInput("slider1", "Slide sth", min = 1, max = 100, 
                 value = c(4, 5)),
     textOutput("text_value"),
@@ -18,9 +22,16 @@ ui <- fluidPage(
 )
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
     
     rv <- reactiveValues(clicked_id = c())
+    
+    observeEvent(input[["max_slider"]], {
+        #renderUI
+        updateSliderInput(session, "slider1", "Slide sth", min = 1, 
+                          max = input[["max_slider"]], 
+                          value = c(4, 5))
+    })
     
     observeEvent(input[["plot1_click"]], {
         df_clicked <- nearPoints(df = df(), 
@@ -38,6 +49,17 @@ server <- function(input, output) {
         
     })
     
+    output[["long_text_box"]] <- renderUI({
+        if(nchar(input[["text1"]]) > 10) {
+            textOutput("long_text")  
+        } else {
+            NULL
+        }
+    })
+    
+    output[["long_text"]] <- renderText({
+        "Congrats, you have written a long text."
+    })
     
     df <- reactive({
         data.frame(x = input[["slider1"]][1]:input[["slider1"]][2],
