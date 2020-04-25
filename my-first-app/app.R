@@ -26,8 +26,14 @@ server <- function(input, output) {
                    y = 4)
     })
     
+    df_clicked <- reactive({
+        nearPoints(df = df(), coordinfo = input[["plot1_click"]], 
+                   maxpoints = 1, allRows = TRUE) 
+    })
+    
     output[["plot1"]] <- renderPlot({
-        ggplot(df(), aes(x = x, y = y)) +
+        ggplot(df_clicked(), aes(x = x, y = y, 
+                                 size = selected_, color = selected_)) +
             geom_point() +
             ggtitle(input[["text1"]])
     })
@@ -37,7 +43,8 @@ server <- function(input, output) {
     })
     
     output[["click_value"]] <- renderPrint({
-        input[["plot1_click"]]
+        nearPoints(df = df(), coordinfo = input[["plot1_click"]], 
+                   maxpoints = 1, allRows = TRUE) 
     })
 }
 
