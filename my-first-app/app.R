@@ -6,7 +6,7 @@ library(ggplot2)
 
 ui <- fluidPage(
     
-    
+    includeMarkdown("few-packages.md"),
     titlePanel("AppAAAAAAAAA"),
     textInput("text1", "Enter title", value = "title"),
     uiOutput("long_text_box"),
